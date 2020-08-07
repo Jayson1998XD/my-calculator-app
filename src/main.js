@@ -9,7 +9,9 @@ new Vue({
     //判断是否已输入+/-/×/÷
     isOperatorAdded: false,
     //判断是否已输入数字
-    issStarted: false
+    issStarted: false,
+    // 解决当按 "=" 获得结果时，再按数字清空答案
+    isEntering: false
   },
   methods: {
     //判断计算器（character）是否加/减/乘/除
@@ -19,15 +21,16 @@ new Vue({
 
     //判断计算器是否按下数字键或加/减/乘/除
     append(character) {
-      // Start
-      if (this, this.equation === '0' && !this.isOperator(character)) {
+      // 输入第一位数字
+      if (this.equation === '0' && !this.isOperator(character)) {
         if (character === '.') {
           this.equation += '' + character
           this.isDecimalAdded = true
         } else {
           this.equation = '' + character
-        }
 
+          this.isEntering = true
+        }
         this.issStarted = true
         return
       }
@@ -37,12 +40,18 @@ new Vue({
         if (character === '.' && this.isDecimalAdded) {
           return
         }
-
+        //解决重复输入小数点
         if (character === '.') {
           this.isDecimalAdded = true
           this.isOperatorAdded = true
         } else {
           this.isOperatorAdded = false
+        }
+
+        if (!this.isEntering) {
+          this.isEntering = true
+          this.equation = "" + character
+          return
         }
 
         this.equation += '' + character
@@ -53,15 +62,22 @@ new Vue({
         this.equation += '' + character
         this.isDecimalAdded = false
         this.isOperatorAdded = true
+
+        this.isEntering = true
       }
     },
     // 按下"=" 
     calculate() {
-      let result = this.equation.replace(new RegExp('×', 'g'), '*').replace('÷','g', '/')
-
+      let result = this.equation.replace(new RegExp('×', 'g'), '*').replace('÷','g', '/')			
       this.equation = parseFloat(eval(result).toFixed(9)).toString()
+
+      let ans = eval(result)
+			this.equation = (ans < 1.0e9 ? parseFloat(ans.toFixed(9)):ans.toExponential(3)).toString()
+
       this.isDecimalAdded = false
       this.isOperatorAdded = false
+
+      this.isEntering = false
     },
     // 按下 "+/-"
     calculateToggle() {
@@ -87,6 +103,8 @@ new Vue({
       this.isDecimalAdded = false
       this.isOperatorAdded = false
       this.issStarted = false
+
+      this.isEntering = false
     }
   }
 })

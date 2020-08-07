@@ -1,3 +1,8 @@
+* {
+  --button-width: 80px;
+  --button-height: 80px;
+}
+
 body {
   display: flex;
   justify-content: center;
@@ -7,8 +12,7 @@ body {
 }
 
 .calculator {
-  --button-width: 80px;
-  --button-height: 80px;
+
 
   display: grid;
   grid-template-areas: "result result result result"
@@ -53,4 +57,5 @@ body {
   color: #666;
   background: #3c3c3c;
   border-radius: 20px;
+  overflow: hidden;
 }
